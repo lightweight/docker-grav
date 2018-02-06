@@ -71,13 +71,28 @@ RUN echo 'opcache.validate_timestamps = 1' >> /usr/local/etc/php/conf.d/php.ini
 RUN echo 'opcache.save_comments = 1' >> /usr/local/etc/php/conf.d/php.ini
 RUN echo 'opcache.enable_file_override = 0' >> /usr/local/etc/php/conf.d/php.ini
 
-# the PHP-fpm configuration
-RUN echo 'security.limit_extensions = .php' >> /usr/local/etc/php-fpm.d/www.conf
+# the PHP-fpm configuration - create new www.conf file!
+RUN echo '[global]' > /usr/local/etc/php-fpm.d/www.conf
+RUN echo 'error_log = /proc/self/fd/2' >> /usr/local/etc/php-fpm.d/www.conf
+RUN echo '[www]' >> /usr/local/etc/php-fpm.d/www.conf
+RUN echo 'user = www-data' >> /usr/local/etc/php-fpm.d/www.conf
+RUN echo 'group = www-data' >> /usr/local/etc/php-fpm.d/www.conf
+RUN echo '; if we send this to /proc/self/fd/1, it never appears' >> /usr/local/etc/php-fpm.d/www.conf
+RUN echo 'access.log = /proc/self/fd/2' >> /usr/local/etc/php-fpm.d/www.conf
+RUN echo 'clear_env = no' >> /usr/local/etc/php-fpm.d/www.conf
 RUN echo 'catch_workers_output = yes' >> /usr/local/etc/php-fpm.d/www.conf
-RUN echo 'php_flag[display_errors] = off' >> /usr/local/etc/php-fpm.d/www.conf
-RUN echo 'php_admin_value[error_log] = /usr/local/var/log/fpm-php.www.log' >> /usr/local/etc/php-fpm.d/www.conf
-RUN echo 'php_admin_flag[log_errors] = on' >> /usr/local/etc/php-fpm.d/www.conf
-RUN echo 'php_admin_value[memory_limit] = 250M' >> /usr/local/etc/php-fpm.d/www.conf
+RUN echo '; Ensure worker stdout and stderr are sent to the main error log.' >> /usr/local/etc/php-fpm.d/www.conf
+RUN echo 'security.limit_extensions = .php' >> /usr/local/etc/php-fpm.d/www.conf
+RUN echo '; process management stuff' >> /usr/local/etc/php-fpm.d/www.conf
+RUN echo 'pm = ondemand' >> /usr/local/etc/php-fpm.d/www.conf
+RUN echo 'pm.max_children = 10' >> /usr/local/etc/php-fpm.d/www.conf
+RUN echo 'pm.start_servers = 2' >> /usr/local/etc/php-fpm.d/www.conf
+RUN echo 'pm.min_spare_servers = 1' >> /usr/local/etc/php-fpm.d/www.conf
+RUN echo 'pm.max_spare_servers = 3' >> /usr/local/etc/php-fpm.d/www.conf
+#RUN echo 'php_flag[display_errors] = off' >> /usr/local/etc/php-fpm.d/www.conf
+#RUN echo 'php_admin_value[error_log] = /usr/local/var/log/fpm-php.www.log' >> /usr/local/etc/php-fpm.d/www.conf
+#RUN echo 'php_admin_flag[log_errors] = on' >> /usr/local/etc/php-fpm.d/www.conf
+#RUN echo 'php_admin_value[memory_limit] = 250M' >> /usr/local/etc/php-fpm.d/www.conf
 
 VOLUME /var/www/html
 
