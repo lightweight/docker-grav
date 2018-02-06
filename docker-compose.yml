@@ -3,9 +3,21 @@ version: "2"
 services:
     app:
         image: kiwilightweight/grav
-        ports:
-            - 127.0.0.1:9002:9000
+#        ports:
+#            - 127.0.0.1:9002:9000
         volumes:
-            - /home/dave/Projects/grav/test:/var/www/html
+#            - /home/dave/Projects/grav/test:/var/www/html
+            - /home/dave/Projects/grav/new:/var/www/html
         restart:
             unless-stopped
+    nginx:
+        image: oeru/nginx-jessie
+        links:
+            - app
+        ports:
+            - "127.0.0.1:8080:80"
+        volumes:
+            - ./nginx:/etc/nginx/conf.d
+            - ./nginx/cache:/var/cache/nginx
+            - /home/dave/Projects/grav/new:/var/www/html
+        restart: unless-stopped

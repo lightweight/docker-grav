@@ -1,9 +1,9 @@
 FROM php:7.0-fpm-jessie
 MAINTAINER Dave Lane <dave@oerfoundation.org> (@lightweight)
 
-#ENV PHPREDIS_VERSION 3.1.4
 RUN apt-get update && apt-get install -y software-properties-common apt-utils
-RUN DEBIAN_FRONTEND="noninteractive" add-apt-repository ppa:ondrej/php
+ENV DEBIAN_FRONTEND="noninteractive"
+#RUN add-apt-repository ppa:ondrej/php
 
 # Install PHP extensions
 RUN apt-get update && apt-get install -y apt-utils git less libbz2-dev libc-client-dev \
@@ -15,18 +15,6 @@ RUN apt-get install -y cron msmtp
 RUN docker-php-ext-configure imap --with-imap --with-imap-ssl --with-kerberos
 RUN docker-php-ext-install bz2 curl imap intl mbstring mcrypt \
     opcache soap xmlrpc zip
-
-## set up Redis support for php
-#RUN docker-php-source extract \
-#    && curl -L -o /tmp/redis.tar.gz https://github.com/phpredis/phpredis/archive/$PHPREDIS_VERSION.tar.gz \
-#    && tar xfz /tmp/redis.tar.gz \
-#    && rm -r /tmp/redis.tar.gz \
-#    && mv phpredis-$PHPREDIS_VERSION /usr/src/php/ext/redis \
-#    && docker-php-ext-install redis \
-#    && docker-php-source delete \
-#    && curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \
-#    && chmod +x wp-cli.phar \
-#    && mv wp-cli.phar /usr/local/bin/wp
 
 # install GD
 RUN apt-get update && apt-get install -y \
@@ -42,7 +30,7 @@ RUN apt-get update && apt-get install -y \
 RUN apt-get install -y \
     libyaml-dev unzip
 RUN pecl install yaml-2.0.0
-RUN docker-php-ext-enable yaml-2.0.0
+RUN docker-php-ext-enable yaml
 RUN pecl install apcu
 RUN docker-php-ext-enable apcu
 
