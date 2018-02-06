@@ -1,0 +1,11 @@
+version: "2"
+
+services:
+    app:
+        image: kiwilightweight/grav
+        ports:
+            - 127.0.0.1:9002:9000
+        volumes:
+            - /home/dave/Projects/grav/test:/var/www/html
+        restart:
+            unless-stopped
