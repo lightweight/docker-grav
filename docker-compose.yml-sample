@@ -1,0 +1,27 @@
+version: "2"
+
+services:
+    redis:
+        image: redis:3-alpine
+    app:
+        image: kiwilightweight/grav
+        volumes:
+            - [PATH_TO_YOUR_GRAV]:/var/www/html
+        restart:
+            unless-stopped
+       networks:
+            default:
+                aliases:
+                    - [YOUR_GRAV_DOMAIN]
+    nginx:
+        image: oeru/nginx-jessie
+        links:
+            - app
+            - redis
+        ports:
+            - "127.0.0.1:8080:80"
+        volumes:
+            - ./nginx:/etc/nginx/conf.d
+            - ./nginx/cache:/var/cache/nginx
+            - [PATH_TO_YOUR_GRAV]:/var/www/html
+        restart: unless-stopped

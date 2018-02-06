@@ -8,13 +8,23 @@ ENV DEBIAN_FRONTEND="noninteractive"
 # Install PHP extensions
 RUN apt-get update && apt-get install -y apt-utils git less libbz2-dev libc-client-dev \
     libcurl4-gnutls-dev libicu-dev libkrb5-dev libmcrypt-dev libpng-dev \
-    libssl-dev libxml2-dev telnet unzip zip
+    libpspell-dev libssl-dev libxml2-dev telnet unzip zip
 RUN apt-get install -y net-tools vim dnsutils
 # install cron and msmtp for outgoing email
 RUN apt-get install -y cron msmtp
 RUN docker-php-ext-configure imap --with-imap --with-imap-ssl --with-kerberos
 RUN docker-php-ext-install bz2 curl imap intl mbstring mcrypt \
-    opcache soap xmlrpc zip
+    pspell opcache soap xmlrpc zip
+
+# install PHPRedis
+ENV PHPREDIS_VERSION 3.1.4
+RUN docker-php-source extract \
+    && curl -L -o /tmp/redis.tar.gz https://github.com/phpredis/phpredis/archive/$PHPREDIS_VERSION.tar.gz \
+    && tar xfz /tmp/redis.tar.gz \
+    && rm -r /tmp/redis.tar.gz \
+    && mv phpredis-$PHPREDIS_VERSION /usr/src/php/ext/redis \
+    && docker-php-ext-install redis \
+    && docker-php-source delete
 
 # install GD
 RUN apt-get update && apt-get install -y \
