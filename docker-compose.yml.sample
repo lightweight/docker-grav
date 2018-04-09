@@ -8,19 +8,19 @@ services:
         networks:
             default:
                 aliases:
-                    - redis.grav.local
+                    - redis.grav.nzoss.nz
     app:
         image: kiwilightweight/grav
         links:
             - redis
         volumes:
-            - /home/dave/Projects/grav/new:/var/www/html
+            - /home/data/nzoss/grav:/var/www/html
         restart:
             unless-stopped
         networks:
             default:
                 aliases:
-                    - grav.local
+                    - grav.nzoss.nz
     nginx:
         image: oeru/nginx-jessie
         links:
@@ -31,9 +31,9 @@ services:
         volumes:
             - ./nginx:/etc/nginx/conf.d
             - ./nginx/cache:/var/cache/nginx
-            - /home/dave/Projects/grav/new:/var/www/html
+            - /home/data/nzoss/grav:/var/www/html
         restart: unless-stopped
         networks:
             default:
                 aliases:
-                    - nginx.grav.local
+                    - nginx.grav.nzoss.nz
